@@ -1,12 +1,38 @@
+import { useState } from "react";
 import ShopList from "./Shoplist";
 //Tilgængelighed -> tilføjet synlige labels til input felter og aria-labels til select + fieldset og legend
+// tilgængelighedstestere: https://qualweb.di.fc.ul.pt/evaluator/ og https://wave.webaim.org/
 
-function ShopInput() {
+//Denne fil bruges til at tilføje varer og butikker. Brugeren kan indtaste en vare, vælge afdeling og butik.
+function ShopInput({ addShopItem, addShop, shops }) {
+  const [inputValue, setInputValue] = useState(""); //vare
+  const [priority, setPriority] = useState(""); //priority henviser til afdelinger
+  const [shopName, setShopName] = useState(""); //butik
+  const [selectedShop, setSelectedShop] = useState(""); //tilknytter butik til varen
+
+  //håndterer data fra "tilføj butik"
+  const handleShopSubmit = (e) => {
+    e.preventDefault();
+    if (shopName.trim()) {
+      addShop(shopName);
+      setShopName("");
+    }
+  };
+  //håndterer data fra "tilføj vare"
+  const handleSubmit = (e) => {
+    e.preventDefault(); //hvis man ikke har preventDefuault genindlæses siden når man trykker submit
+    if (inputValue.trim() && priority && selectedShop) {
+      addShopItem(inputValue, priority, selectedShop);
+      setInputValue("");
+      setPriority("");
+      setSelectedShop("");
+    }
+  };
   return (
     //Tilføj ny butik + tilføj ny vare
     // i onChange er e er bare en parameter, det kan hedde noget andet
     <>
-      <form>
+      <form onSubmit={handleShopSubmit}>
         <fieldset>
           <legend>Tilføj Butik</legend>
           <label htmlFor="shopName">Tilføj Ny Butik</label>
@@ -21,7 +47,7 @@ function ShopInput() {
         </fieldset>
       </form>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <fieldset>
           <legend>Tilføj Vare Til Indkøbsliste</legend>
           <label htmlFor="inputValue">Tilføj Ny Vare</label>
